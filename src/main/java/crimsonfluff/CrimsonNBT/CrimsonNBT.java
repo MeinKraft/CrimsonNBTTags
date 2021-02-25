@@ -46,7 +46,7 @@ public class CrimsonNBT {
 
                 else {
                     String st = current.getTag().toString();
-                    int l = 150;
+                    int l = 200;
 
                     if (st.length() > l) {
                         event.getToolTip().add(new StringTextComponent(st.substring(0, l)).mergeStyle(TextFormatting.DARK_GRAY));
@@ -57,15 +57,18 @@ public class CrimsonNBT {
                 }
             }
 
+            // Don't generate block tags: just checking if *any* TAGs exist <- uses less resources ?!
+            // also re-use iTag
+            Collection<ResourceLocation> iTag = ItemTags.getCollection().getOwningTags(current.getItem());
             if (!KeyboardHelper.isHoldingShift()) {
-                Collection<ResourceLocation> iTag = ItemTags.getCollection().getOwningTags(current.getItem());
-                Collection<ResourceLocation> iTag2 = BlockTags.getCollection().getOwningTags(Block.getBlockFromItem(current.getItem()));
+                //Collection<ResourceLocation> iTag = ItemTags.getCollection().getOwningTags(current.getItem());
+                if (iTag.size() == 0) iTag = BlockTags.getCollection().getOwningTags(Block.getBlockFromItem(current.getItem()));
 
-                if ((iTag.size() + iTag2.size()) > 0)
+                if ((iTag.size()) > 0)
                     event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".shift").mergeStyle(TextFormatting.YELLOW));
 
             } else {
-                Collection<ResourceLocation> iTag = ItemTags.getCollection().getOwningTags(current.getItem());
+                //Collection<ResourceLocation> iTag = ItemTags.getCollection().getOwningTags(current.getItem());
 
                 if (iTag.size() > 0) {
                     event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".item_tags").mergeStyle(TextFormatting.GRAY));
