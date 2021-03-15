@@ -1,6 +1,7 @@
 package crimsonfluff.CrimsonNBT;
 
 import crimsonfluff.CrimsonNBT.util.KeyboardHelper;
+import crimsonfluff.CrimsonNBT.util.nbtCommands;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemGroup;
@@ -16,9 +17,11 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.Collection;
 
@@ -27,7 +30,10 @@ public class CrimsonNBT {
     public static final String MOD_ID = "crimsonnbt";
 
     public CrimsonNBT() {
-        //MinecraftForge.EVENT_BUS.register(this);
+        // https://forums.minecraftforge.net/topic/96248-set-clipboard/
+        System.setProperty("java.awt.headless", "false");       // Stops command failing because of error
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Mod.EventBusSubscriber(modid = CrimsonNBT.MOD_ID, value = Dist.CLIENT)
@@ -42,7 +48,7 @@ public class CrimsonNBT {
         // NOTE: Check .hasTag first !
             if (current.hasTag()) {
                 if (!KeyboardHelper.isHoldingCtrl())
-                    event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".ctrl").mergeStyle(TextFormatting.YELLOW));
+                    event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".ctrl"));
 
                 else {
                     String st = current.getTag().toString();
@@ -65,7 +71,7 @@ public class CrimsonNBT {
                 if (iTag.size() == 0) iTag = BlockTags.getCollection().getOwningTags(Block.getBlockFromItem(current.getItem()));
 
                 if ((iTag.size()) > 0)
-                    event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".shift").mergeStyle(TextFormatting.YELLOW));
+                    event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".shift"));
 
             } else {
                 //Collection<ResourceLocation> iTag = ItemTags.getCollection().getOwningTags(current.getItem());
@@ -89,4 +95,7 @@ public class CrimsonNBT {
             }
         }
     }
+
+    @SubscribeEvent
+    public void onCommandsRegister(RegisterCommandsEvent event) { new nbtCommands(event.getDispatcher()); }
 }
