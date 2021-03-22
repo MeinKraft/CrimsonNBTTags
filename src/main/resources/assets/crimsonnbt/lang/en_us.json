@@ -1,11 +1,18 @@
 {
-  "tip.crimsonnbt.ctrl": "§7Press §eCTRL§7 to show NBT",
-  "tip.crimsonnbt.shift": "§7Press §eSHIFT§7 to show Tags list",
+  "tip.crimsonnbt.ctrl": "§7Hold §eCTRL§7 to show NBT",
+  "tip.crimsonnbt.shift": "§7Hold §eSHIFT§7 to show Tags list",
 
   "tip.crimsonnbt.item_tags": "Item Tags",
   "tip.crimsonnbt.block_tags": "Block Tags",
 
   "tip.crimsonnbt.copied": "copied to the Clipboard",
   "tip.crimsonnbt.notcopied": "has NO NBT data",
-  "tip.crimsonnbt.empty": "slot is empty"
+  "tip.crimsonnbt.empty": "slot is empty",
+  "tip.crimsonnbt.more": "more...",
+
+  "tip.crimsonnbt.durability": "durability",
+  "tip.crimsonnbt.burn": "burntime",
+  "tip.crimsonnbt.hours": "hours",
+  "tip.crimsonnbt.minutes": "minutes",
+  "tip.crimsonnbt.seconds": "seconds"
 }
