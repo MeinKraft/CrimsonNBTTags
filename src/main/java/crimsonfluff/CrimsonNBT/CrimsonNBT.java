@@ -1,11 +1,9 @@
 package crimsonfluff.CrimsonNBT;
 
-import com.sun.java.accessibility.util.java.awt.TextComponentTranslator;
 import crimsonfluff.CrimsonNBT.util.KeyboardHelper;
 import crimsonfluff.CrimsonNBT.util.nbtCommands;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -56,7 +54,7 @@ public class CrimsonNBT {
             int hours = BurnTime / 3600;
             BurnTime %= 3600;
             int mins = BurnTime / 60;
-            int secs = BurnTime % 60;
+            int secs = BurnTime % 60;  // TODO: Reuse BurnTime variable
 
             if (hours > 0)
                 timeString = timeString + hours + " " + new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".hours").getString();
@@ -83,15 +81,13 @@ public class CrimsonNBT {
 
                 if (st.length() > l) {
                     event.getToolTip().add(new StringTextComponent(st.substring(0, l)).mergeStyle(TextFormatting.DARK_GRAY));
-                    event.getToolTip().add(new StringTextComponent((st.length() - l) + " " + new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".more")).mergeStyle(TextFormatting.DARK_GRAY));
+                    event.getToolTip().add(new StringTextComponent((st.length() - l) + " " + new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".more").getString()).mergeStyle(TextFormatting.DARK_GRAY));
 
                 } else event.getToolTip().add(new StringTextComponent(st).mergeStyle(TextFormatting.DARK_GRAY));
 
             } else event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".ctrl"));
         }
 
-        // Don't generate block tags: just checking if *any* TAGs exist <- uses less resources ?!
-        // also re-use iTag
         Collection<ResourceLocation> iTag = ItemTags.getCollection().getOwningTags(current.getItem());
         if (KeyboardHelper.isHoldingShift()) {
             if (iTag.size() > 0) {
@@ -121,7 +117,7 @@ public class CrimsonNBT {
 // no check needed if ModName is already in tooltip, maybe JEI does this itself? didn't duplicate name in tooltip during testing
         String modName = getModName(current);
         if (modName != null)
-            //if (!event.getToolTip().get(event.getToolTip().size() - 1).getString().equals(modID))
+            //if (!event.getToolTip().get(event.getToolTip().size() - 1).getString().equals(modName))
                 event.getToolTip().add(new StringTextComponent(modName).mergeStyle(TextFormatting.BLUE));
     }
 
