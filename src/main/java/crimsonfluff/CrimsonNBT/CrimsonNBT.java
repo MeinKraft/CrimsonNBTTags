@@ -85,7 +85,7 @@ public class CrimsonNBT {
 
                 } else event.getToolTip().add(new StringTextComponent(st).mergeStyle(TextFormatting.DARK_GRAY));
 
-            } else event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".ctrl"));
+            } else event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".ctrl", new TranslationTextComponent("tip.ctrl").mergeStyle(TextFormatting.YELLOW)).mergeStyle(TextFormatting.GRAY));
         }
 
         Collection<ResourceLocation> iTag = ItemTags.getCollection().getOwningTags(current.getItem());
@@ -109,7 +109,7 @@ public class CrimsonNBT {
             if (iTag.size() == 0) iTag = BlockTags.getCollection().getOwningTags(Block.getBlockFromItem(current.getItem()));
 
             if ((iTag.size()) > 0)
-                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".shift"));
+                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".shift", new TranslationTextComponent("tip.shift").mergeStyle(TextFormatting.YELLOW)).mergeStyle(TextFormatting.GRAY));
         }
 
 // add ModName to end of Tooltip (mainly for when hovering over items in Vanilla GUIs)

@@ -1,6 +1,6 @@
 {
-  "tip.crimsonnbt.ctrl": "§7Hold §eCTRL§7 to show NBT",
-  "tip.crimsonnbt.shift": "§7Hold §eSHIFT§7 to show Tags list",
+  "tip.crimsonnbt.ctrl": "Hold %s to show NBT",
+  "tip.crimsonnbt.shift": "Hold %s to show Tags",
 
   "tip.crimsonnbt.item_tags": "Item Tags",
   "tip.crimsonnbt.block_tags": "Block Tags",
@@ -14,5 +14,8 @@
   "tip.crimsonnbt.burn": "burntime",
   "tip.crimsonnbt.hours": "hours",
   "tip.crimsonnbt.minutes": "minutes",
-  "tip.crimsonnbt.seconds": "seconds"
+  "tip.crimsonnbt.seconds": "seconds",
+
+  "tip.shift": "SHIFT",
+  "tip.ctrl": "CTRL"
 }
