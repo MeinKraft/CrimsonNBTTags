@@ -1,8 +1,8 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/crimson-nbt-tags",
   "promos": {
-    "1.16.4-latest": "1.0.4",
-    "1.16.4-recommended": "1.0.4"
+    "1.16.5-latest": "1.1.4",
+    "1.16.5-recommended": "1.1.4"
   },
   "1.16.4": {
     "1.0.0": "Initial Release",
@@ -10,5 +10,8 @@
     "1.0.2": "Corrected UpdateURL. Changed display text from Yellow. Added Copy command",
     "1.0.3": "Added Durability, Burn Time and Mod Name to tooltip. Slight code clean-up.",
     "1.0.4": "Better handling of language files."
+  },
+  "1.16.5": {
+    "1.1.4": "Official Mappings: MC 1.16.5, Forge 36.1.2. Updated Gradle 6.8.1"
   }
 }

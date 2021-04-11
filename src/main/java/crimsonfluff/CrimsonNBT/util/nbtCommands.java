@@ -9,6 +9,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Util;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -22,7 +23,7 @@ public class nbtCommands {
 
     public nbtCommands(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("crimsonnbt").requires((p_198496_0_) -> {
-            return p_198496_0_.hasPermissionLevel(2);
+            return p_198496_0_.hasPermission(2);
         })
             .then(Commands.literal("copy")
                 .then(Commands.argument("slot", IntegerArgumentType.integer(0, 40))
@@ -37,7 +38,7 @@ public class nbtCommands {
     }
 
     private int nbtCopy(CommandContext<CommandSource> cscc, int slot) throws CommandSyntaxException {
-        PlayerEntity player = cscc.getSource().asPlayer();
+        PlayerEntity player = cscc.getSource().getPlayerOrException();
         //player.sendStatusMessage(new StringTextComponent("Hello world"), false);
         // TODO: Try cscc.sendFeedback ?
 
@@ -45,16 +46,16 @@ public class nbtCommands {
         String myString;
 
         if (slot == -1)
-            item = player.inventory.getCurrentItem();
+            item = player.inventory.getSelected();
         else
-            item = player.inventory.getStackInSlot(slot);     // 0 to 40, includes armour, off hand
+            item = player.inventory.getItem(slot);     // 0 to 40, includes armour, off hand
 
         if (item.isEmpty()) {
-            player.sendStatusMessage(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".empty"), false);
+            player.sendMessage(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".empty"), Util.NIL_UUID);
 
         } else {
             if (item.hasTag()) {
-                myString = item.getTag().getString();
+                myString = item.getTag().getAsString();
 
                 Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                 clipboard.setContents(new StringSelection(myString), null);
@@ -64,10 +65,10 @@ public class nbtCommands {
             } else
                 myString = new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".notcopied").getString();
 
-            if (item.hasDisplayName())
-                player.sendStatusMessage(new StringTextComponent("'" + item.getDisplayName().getString()).appendString("' " + myString), false);
+            if (item.hasCustomHoverName())
+                player.sendMessage(new StringTextComponent("'" + item.getDisplayName().getString()).append("' " + myString), Util.NIL_UUID);
             else
-                player.sendStatusMessage(new TranslationTextComponent(item.getTranslationKey()).appendString(" " + myString), false);
+                player.sendMessage(new TranslationTextComponent(item.getDescriptionId()).append(" " + myString), Util.NIL_UUID);
         }
 
         return 0;

@@ -13,6 +13,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
@@ -39,14 +40,14 @@ public class CrimsonNBT {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void ItemToolTipEvent(ItemTooltipEvent event) {
-        if (!Minecraft.getInstance().gameSettings.advancedItemTooltips) return;
+        if (!Minecraft.getInstance().options.advancedItemTooltips) return;
 
         ItemStack current = event.getItemStack();
         if (current.isEmpty()) return;
 
 // Add Burntime: "148940 (2 hours, 4 minutes, 7 seconds)"
 // 148940 = (((2*60)+4)*60+7)*20
-        int BurnTime = net.minecraftforge.common.ForgeHooks.getBurnTime(current);
+        int BurnTime = ForgeHooks.getBurnTime(current);
         if (BurnTime > 0) {
             String timeString = BurnTime + " (";
             BurnTime /= 20;
@@ -67,49 +68,49 @@ public class CrimsonNBT {
                 timeString = timeString + secs + " " + new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".seconds").getString();
             }
 
-            event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".burn").appendString(": " + timeString +")").mergeStyle(TextFormatting.DARK_GRAY));
+            event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".burn").append(": " + timeString +")").withStyle(TextFormatting.DARK_GRAY));
         }
 
 // NOTE: Check .hasTag first !
         if (current.hasTag()) {
-            if (current.getMaxDamage() != 0 && current.getDamage() == 0)
-                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".durability").appendString(": " + current.getMaxDamage()).mergeStyle(TextFormatting.DARK_GRAY));
+            if (current.getMaxDamage() != 0 && current.getDamageValue() == 0)
+                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".durability").append(": " + current.getMaxDamage()).withStyle(TextFormatting.DARK_GRAY));
 
             if (KeyboardHelper.isHoldingCtrl()) {
                 String st = current.getTag().toString();
                 int l = 200;
 
                 if (st.length() > l) {
-                    event.getToolTip().add(new StringTextComponent(st.substring(0, l)).mergeStyle(TextFormatting.DARK_GRAY));
-                    event.getToolTip().add(new StringTextComponent((st.length() - l) + " " + new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".more").getString()).mergeStyle(TextFormatting.DARK_GRAY));
+                    event.getToolTip().add(new StringTextComponent(st.substring(0, l)).withStyle(TextFormatting.DARK_GRAY));
+                    event.getToolTip().add(new StringTextComponent((st.length() - l) + " " + new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".more").getString()).withStyle(TextFormatting.DARK_GRAY));
 
-                } else event.getToolTip().add(new StringTextComponent(st).mergeStyle(TextFormatting.DARK_GRAY));
+                } else event.getToolTip().add(new StringTextComponent(st).withStyle(TextFormatting.DARK_GRAY));
 
-            } else event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".ctrl", new TranslationTextComponent("tip.ctrl").mergeStyle(TextFormatting.YELLOW)).mergeStyle(TextFormatting.GRAY));
+            } else event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".ctrl", new TranslationTextComponent("tip.ctrl").withStyle(TextFormatting.YELLOW)).withStyle(TextFormatting.GRAY));
         }
 
-        Collection<ResourceLocation> iTag = ItemTags.getCollection().getOwningTags(current.getItem());
+        Collection<ResourceLocation> iTag = ItemTags.getAllTags().getMatchingTags(current.getItem());
         if (KeyboardHelper.isHoldingShift()) {
             if (iTag.size() > 0) {
-                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".item_tags").mergeStyle(TextFormatting.GRAY));
+                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".item_tags").withStyle(TextFormatting.GRAY));
 
                 for (ResourceLocation tag : iTag)
-                    event.getToolTip().add(new StringTextComponent("  #" + tag).mergeStyle(TextFormatting.DARK_GRAY));
+                    event.getToolTip().add(new StringTextComponent("  #" + tag).withStyle(TextFormatting.DARK_GRAY));
             }
 
-            iTag = BlockTags.getCollection().getOwningTags(Block.getBlockFromItem(current.getItem()));
+            iTag = BlockTags.getAllTags().getMatchingTags(Block.byItem(current.getItem()));
             if (iTag.size() > 0) {
-                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".block_tags").mergeStyle(TextFormatting.GRAY));
+                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".block_tags").withStyle(TextFormatting.GRAY));
 
                 for (ResourceLocation tag : iTag)
-                    event.getToolTip().add(new StringTextComponent("  #" + tag).mergeStyle(TextFormatting.DARK_GRAY));
+                    event.getToolTip().add(new StringTextComponent("  #" + tag).withStyle(TextFormatting.DARK_GRAY));
             }
 
         } else {
-            if (iTag.size() == 0) iTag = BlockTags.getCollection().getOwningTags(Block.getBlockFromItem(current.getItem()));
+            if (iTag.size() == 0) iTag = BlockTags.getAllTags().getMatchingTags(Block.byItem(current.getItem()));
 
             if ((iTag.size()) > 0)
-                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".shift", new TranslationTextComponent("tip.shift").mergeStyle(TextFormatting.YELLOW)).mergeStyle(TextFormatting.GRAY));
+                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".shift", new TranslationTextComponent("tip.shift").withStyle(TextFormatting.YELLOW)).withStyle(TextFormatting.GRAY));
         }
 
 // add ModName to end of Tooltip (mainly for when hovering over items in Vanilla GUIs)
@@ -118,7 +119,7 @@ public class CrimsonNBT {
         String modName = getModName(current);
         if (modName != null)
             //if (!event.getToolTip().get(event.getToolTip().size() - 1).getString().equals(modName))
-                event.getToolTip().add(new StringTextComponent(modName).mergeStyle(TextFormatting.BLUE));
+                event.getToolTip().add(new StringTextComponent(modName).withStyle(TextFormatting.BLUE));
     }
 
     @Nullable
