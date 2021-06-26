@@ -1,9 +1,8 @@
 package crimsonfluff.CrimsonNBT;
 
-import crimsonfluff.CrimsonNBT.util.KeyboardHelper;
-import crimsonfluff.CrimsonNBT.util.nbtCommands;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -21,6 +20,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.StringUtils;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -36,11 +36,11 @@ public class CrimsonNBT {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-// removed the class
+    // removed the class
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void ItemToolTipEvent(ItemTooltipEvent event) {
-        if (!Minecraft.getInstance().options.advancedItemTooltips) return;
+        if (! Minecraft.getInstance().options.advancedItemTooltips) return;
 
         ItemStack current = event.getItemStack();
         if (current.isEmpty()) return;
@@ -68,29 +68,29 @@ public class CrimsonNBT {
                 timeString = timeString + secs + " " + new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".seconds").getString();
             }
 
-            event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".burn").append(": " + timeString +")").withStyle(TextFormatting.DARK_GRAY));
+            event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".burn").append(": " + timeString + ")").withStyle(TextFormatting.DARK_GRAY));
         }
 
-// NOTE: Check .hasTag first !
         if (current.hasTag()) {
             if (current.getMaxDamage() != 0 && current.getDamageValue() == 0)
                 event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".durability").append(": " + current.getMaxDamage()).withStyle(TextFormatting.DARK_GRAY));
 
-            if (KeyboardHelper.isHoldingCtrl()) {
+            if (isHoldingCtrl()) {
                 String st = current.getTag().toString();
                 int l = 200;
 
                 if (st.length() > l) {
                     event.getToolTip().add(new StringTextComponent(st.substring(0, l)).withStyle(TextFormatting.DARK_GRAY));
-                    event.getToolTip().add(new StringTextComponent((st.length() - l) + " " + new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".more").getString()).withStyle(TextFormatting.DARK_GRAY));
+                    event.getToolTip().add(new StringTextComponent((st.length() - l) + " ").append(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".more")).withStyle(TextFormatting.DARK_GRAY));
 
                 } else event.getToolTip().add(new StringTextComponent(st).withStyle(TextFormatting.DARK_GRAY));
 
-            } else event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".ctrl", new TranslationTextComponent("tip.ctrl").withStyle(TextFormatting.YELLOW)).withStyle(TextFormatting.GRAY));
+            } else
+                event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".ctrl", new TranslationTextComponent("tip.ctrl").withStyle(TextFormatting.YELLOW)).withStyle(TextFormatting.GRAY));
         }
 
         Collection<ResourceLocation> iTag = ItemTags.getAllTags().getMatchingTags(current.getItem());
-        if (KeyboardHelper.isHoldingShift()) {
+        if (isHoldingShift()) {
             if (iTag.size() > 0) {
                 event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".item_tags").withStyle(TextFormatting.GRAY));
 
@@ -109,22 +109,22 @@ public class CrimsonNBT {
         } else {
             if (iTag.size() == 0) iTag = BlockTags.getAllTags().getMatchingTags(Block.byItem(current.getItem()));
 
-            if ((iTag.size()) > 0)
+            if (iTag.size() > 0)
                 event.getToolTip().add(new TranslationTextComponent("tip." + CrimsonNBT.MOD_ID + ".shift", new TranslationTextComponent("tip.shift").withStyle(TextFormatting.YELLOW)).withStyle(TextFormatting.GRAY));
         }
 
-// add ModName to end of Tooltip (mainly for when hovering over items in Vanilla GUIs)
-// JEI seems to be only mod that adds ModName to the tooltip
-// no check needed if ModName is already in tooltip, maybe JEI does this itself? didn't duplicate name in tooltip during testing
-        String modName = getModName(current);
-        if (modName != null)
-            //if (!event.getToolTip().get(event.getToolTip().size() - 1).getString().equals(modName))
-                event.getToolTip().add(new StringTextComponent(modName).withStyle(TextFormatting.BLUE));
+// Must check else you get double mod name in JEI
+// WAILA/HWYLA adds mod name too, so don't bother
+        if (! ModList.get().isLoaded("waila")) {
+            String modName = getModName(current);
+            if (modName != null)
+                if (! event.getToolTip().get(event.getToolTip().size() - 1).getString().equals(modName))
+                    event.getToolTip().add(new StringTextComponent(modName).withStyle(TextFormatting.BLUE));
+        }
     }
 
     @Nullable
     private static String getModName(ItemStack itemStack) {
-// already checks for isEmpty() at start of ToolTip Event
         String modName = itemStack.getItem().getCreatorModId(itemStack);
 
         if (modName != null) {
@@ -134,6 +134,18 @@ public class CrimsonNBT {
         }
 
         return null;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static boolean isHoldingShift() {
+        long WINDOW = Minecraft.getInstance().getWindow().getWindow();
+        return InputMappings.isKeyDown(WINDOW, GLFW.GLFW_KEY_LEFT_SHIFT) || InputMappings.isKeyDown(WINDOW, GLFW.GLFW_KEY_RIGHT_SHIFT);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static boolean isHoldingCtrl() {
+        long WINDOW = Minecraft.getInstance().getWindow().getWindow();
+        return InputMappings.isKeyDown(WINDOW, GLFW.GLFW_KEY_LEFT_CONTROL) || InputMappings.isKeyDown(WINDOW, GLFW.GLFW_KEY_RIGHT_CONTROL);
     }
 
     @SubscribeEvent

@@ -1,10 +1,9 @@
-package crimsonfluff.CrimsonNBT.util;
+package crimsonfluff.CrimsonNBT;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import crimsonfluff.CrimsonNBT.CrimsonNBT;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.PlayerEntity;
